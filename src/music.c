@@ -329,13 +329,13 @@ void music_init() {
     sound_volume(0, 255);
 
     sound_wave(1, WAVE_NOISE);
-    sound_volume(1, 0);
+    sound_volume(1, 255);
 
     sound_wave(2, WAVE_TRIANGLE);
-    sound_volume(2, 0);
+    sound_volume(2, 255);
 
     sound_wave(3, WAVE_TRIANGLE);
-    sound_volume(3, 0);
+    sound_volume(3, 255);
 
     memcpy(&TRACK[0][0], CHORUS_MELODY, sizeof(CHORUS_MELODY));
     memcpy(&TRACK[0][CHORUS_MELODY_LENGTH], BRIDGE_MELODY, sizeof(BRIDGE_MELODY));

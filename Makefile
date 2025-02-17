@@ -31,8 +31,12 @@ dirs:
 clean:
 	rm ./**/*.o
 	rm ./*.iso
-	rm ./**/*.elf
 	rm ./**/*.bin
+
+run:
+	make iso && qemu-system-i386 -drive format=raw,file=boot.iso -d cpu_reset -monitor stdio \
+	 -device sb16,audiodev=snd -audiodev pa,id=snd,out.frequency=22050,out.channels=1,out.format=s16 \
+	 -display sdl
 
 %.o: %.c
 	$(CC) -o $@ -c $< $(GFLAGS) $(CCFLAGS)
@@ -44,7 +48,7 @@ bootsect: $(BOOTSECT_OBJS)
 	$(LD) -o ./bin/$(BOOTSECT) $^ -Ttext 0x7C00 --oformat=binary
 
 kernel: $(KERNEL_OBJS)
-	$(LD) -o ./bin/$(KERNEL) $^ $(LDFLAGS) -Tsrc/link.ld
+	$(LD) -o ./bin/$(KERNEL) $^ $(LDFLAGS) -T src/link.ld
 
 iso: bootsect kernel
 	dd if=/dev/zero of=boot.iso bs=512 count=2880
