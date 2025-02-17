@@ -145,7 +145,7 @@ print:
 1:  ret
 
 welcome_str:
-    .asciz "TETRIS TIME\n"
+    .asciz "TETRIS TIME? TRY TETRIS TRAGEDY\n"
 disk_error_str:
     .asciz "DISK ERROR\n"
 

@@ -171,8 +171,8 @@ static const struct Tetromino TETROMINOS[NUM_TETROMINOS] = {
 
 // from listfist.com/list-of-tetris-levels-by-speed-nes-ntsc-vs-pal
 static u8 FRAMES_PER_STEP[NUM_LEVELS] = {
-    48, 43, 38, 33, 28, 23, 18, 13, 8, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 1
+    36, 32, 29, 25, 22, 18, 15, 11, 7, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1
 };
 
 static u32 LINE_MULTIPLIERS[4] = {

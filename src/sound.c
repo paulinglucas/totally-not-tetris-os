@@ -147,8 +147,8 @@ static const f64 NOTES[NUM_OCTAVES * OCTAVE_SIZE] = {
 #define DSP_VOLUME  0x22
 #define DSP_IRQ     0x80
 
-#define SAMPLE_RATE     48000
-#define BUFFER_MS       30
+#define SAMPLE_RATE     22050
+#define BUFFER_MS       50
 
 #define BUFFER_SIZE ((size_t) (SAMPLE_RATE * (BUFFER_MS / 1000.0)))
 static i16 buffer[BUFFER_SIZE];
@@ -229,9 +229,9 @@ static void dsp_write(u8 b) {
     outportb(DSP_WRITE, b);
 }
 
-static void dsp_read(u8 b) {
+static u8 dsp_read() {
     while (inportb(DSP_READ_STATUS) & 0x80);
-    outportb(DSP_READ, b);
+    inportb(DSP_READ);
 }
 
 static void reset() {
@@ -285,7 +285,7 @@ static void transfer(void *buf, u32 len) {
     outportb(DSP_ON_8, 4 + (DMA_CHANNEL_16 % 4));
 
     // clear byte-poiner flip-flop
-    outportb(DMA_FLIP_FLOP, 1);
+    outportb(DMA_FLIP_FLOP, 0xFF);
 
     // write DMA mode for transfer
     outportb(DSP_ON_16, (DMA_CHANNEL_16 % 4) | mode | (1 << 4));
@@ -307,12 +307,23 @@ static void transfer(void *buf, u32 len) {
 }
 
 static void sb16_irq_handler(struct Registers *regs) {
+    static volatile bool behind = false;
+    
+    if (behind) {
+        dsp_read();
+        inportb(DSP_ACK_16);
+        return;
+    }
+
     buffer_flip = !buffer_flip;
+    behind = true;
 
     fill(
         &buffer[buffer_flip ? 0 : (BUFFER_SIZE / 2)],
         (BUFFER_SIZE / 2)
     );
+
+    behind = false;
 
     inportb(DSP_READ_STATUS);
     inportb(DSP_ACK_16);
@@ -342,7 +353,7 @@ void sound_init() {
     set_sample_rate(SAMPLE_RATE);
 
     u16 sample_count = (BUFFER_SIZE / 2) - 1;
-    dsp_write(DSP_PLAY | DSP_PROG_16 | DSP_AUTO_INIT);
+    dsp_write(DSP_AUTO_INIT | DSP_PLAY | DSP_PROG_16);
     dsp_write(DSP_SIGNED | DSP_MONO);
     dsp_write((u8) ((sample_count >> 0) & 0xFF));
     dsp_write((u8) ((sample_count >> 8) & 0xFF));
