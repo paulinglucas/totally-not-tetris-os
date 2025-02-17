@@ -34,7 +34,7 @@ clean:
 	rm ./**/*.bin
 
 run:
-	make iso && qemu-system-i386 -drive format=raw,file=boot.iso -d cpu_reset -monitor stdio \
+	make dirs && make iso && qemu-system-i386 -drive format=raw,file=boot.iso -d cpu_reset -monitor stdio \
 	 -device sb16,audiodev=snd -audiodev pa,id=snd,out.frequency=22050,out.channels=1,out.format=s16 \
 	 -display sdl
 
